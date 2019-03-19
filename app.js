@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Antique = require("./models/antique");
 const Comment = require("./models/comment");
+app.use(express.static(__dirname + "/public"));
 const seedDb = require("./seeds");
 
 mongoose.connect("mongodb://localhost:27017/antiques", {
@@ -70,39 +71,39 @@ app.get("/antiques/:id", (req, res) => {
 // COMMENTS ROUTES
 //===================
 
-app.get("/antiques/:id/comments/new", (req,res)=>{
-  // find antiques by id 
-  Antique.findById(req.params.id, (err, antique)=> {
-    if(err) {
-      console.log(err)
+app.get("/antiques/:id/comments/new", (req, res) => {
+  // find antiques by id
+  Antique.findById(req.params.id, (err, antique) => {
+    if (err) {
+      console.log(err);
     } else {
-  res.render("comments/new", {antique:antique});
+      res.render("comments/new", { antique: antique });
     }
-  })
-})
+  });
+});
 
-app.post("/antiques/:id/comments", (req,res) =>{
-  // Lookup new comment by id 
-  Antique.findById(req.params.id, (err, antique)=> {
-    if(err) {
-      console.log(err)
-      res.redirect("/antiques")
+app.post("/antiques/:id/comments", (req, res) => {
+  // Lookup new comment by id
+  Antique.findById(req.params.id, (err, antique) => {
+    if (err) {
+      console.log(err);
+      res.redirect("/antiques");
     } else {
-      Comment.create(req.body.comment, (err, comment)=> {
-        if(err) { 
-          console.log(err)
+      Comment.create(req.body.comment, (err, comment) => {
+        if (err) {
+          console.log(err);
         } else {
-          antique.comments.push(comment)
-          antique.save()
-          res.redirect("/antiques/" + antique._id)
+          antique.comments.push(comment);
+          antique.save();
+          res.redirect("/antiques/" + antique._id);
         }
-      })
+      });
     }
-  })
+  });
   // create new comment to antique
   // connect new comment to antique
   // redirect antiques show page
-})
+});
 
 app.listen(3000, () => {
   console.log("The Antique Server Has  Started!!");

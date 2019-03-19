@@ -18,15 +18,15 @@
     <div class="col-md-3 col-sm-6">
       <div class="thumbnail">
         <img src="<%= antique.image%>" />
+        <div class="caption">
+          <h4><%= antique.name%></h4>
+        </div>
+        <p>
+          <a href="/antiques/<%=antique._id %>" class="btn btn-primary"
+            >More Info</a
+          >
+        </p>
       </div>
-      <div class="caption">
-        <h4><%= antique.name%></h4>
-      </div>
-      <p>
-        <a href="/antiques/<%=antique._id %>" class="btn btn-primary"
-          >More Info</a
-        >
-      </p>
     </div>
     <% }) %>
   </div>
