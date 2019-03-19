@@ -3,39 +3,16 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const Antique = require("./models/antique");
+//const Comment = require("./models/comments");
+const seedDb = require("./seeds");
 
 mongoose.connect("mongodb://localhost:27017/antiques", {
   useNewUrlParser: true
 });
 
-// Schema Setup
-// let antiqueSchema = new mongoose.Schema({
-//   name: String,
-//   image: String,
-//   description: String
-// });
-
-// let Antique = mongoose.model("Antique", antiqueSchema); // this is a pattern for singular bit of data It gonna show as a 'antiques' in the database collection and each one
-
-// Antique.create(
-//   {
-//     name: "Irbed",
-//     image:
-//       "https://www.thoughtco.com/thmb/izTzjufWQzSYBSsgbgMpOEkLiDE=/768x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-488004795-5c70260546e0fb0001b681d6.jpg",
-//     description: "This is an Awesome antique"
-//   },
-//   (err, antique) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       console.log("Newly Create antique ");
-//       console.log(antique);
-//     }
-//   }
-// );
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+seedDb();
 
 app.get("/", (req, res) => {
   res.render("landing");
@@ -77,14 +54,16 @@ app.get("/antiques/new", (req, res) => {
 // SHOW - show more info about one Antique
 app.get("/antiques/:id", (req, res) => {
   // Find the Antique with the provided ID
-  Antique.findById(req.params.id, (err, foundAntique) => {
-    if (err) {
-      console.log(err);
-    } else {
-      // render show template with that Antique
-      res.render("show", { antique: foundAntique });
-    }
-  });
+  Antique.findById(req.params.id)
+    .populate("comments")
+    .exec((err, foundAntique) => {
+      if (err) {
+        console.log(err);
+      } else {
+        // render show template with that Antique
+        res.render("show", { antique: foundAntique });
+      }
+    });
 });
 
 app.listen(3000, () => {

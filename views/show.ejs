@@ -4,5 +4,11 @@
 
 <img src="<%= antique.image %>" />
 <p><%= antique.description %></p>
-
-<% include partials/footer %>
+<% antique.comments.forEach(comment => { %>
+<p>
+  <strong>
+    <%= comment.author%>
+  </strong>
+  - <%= comment.text%>
+</p>
+<% }) %> <% include partials/footer %>
