@@ -2,17 +2,38 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 const Antique = require("./models/antique");
 const Comment = require("./models/comment");
-app.use(express.static(__dirname + "/public"));
+const User = require("./models/user");
 const seedDb = require("./seeds");
 
+// PASSPORT CONFIGURATION
+app.use(
+  require("express-session")({
+    secret: "Hello world",
+    resave: false,
+    saveUninitialized: false
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  next();
+});
 mongoose.connect("mongodb://localhost:27017/antiques", {
   useNewUrlParser: true
 });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
 seedDb();
 
 app.get("/", (req, res) => {
@@ -21,11 +42,15 @@ app.get("/", (req, res) => {
 // INDEX - Show all Antiques
 app.get("/antiques", (req, res) => {
   // Get all Antiques from DB
+  console.log(req.user);
   Antique.find({}, (err, allAntique) => {
     if (err) {
       console.log(err);
     } else {
-      res.render("antiques/index", { antiques: allAntique });
+      res.render("antiques/index", {
+        antiques: allAntique,
+        currentUser: req.user
+      });
     }
   });
 });
@@ -71,7 +96,7 @@ app.get("/antiques/:id", (req, res) => {
 // COMMENTS ROUTES
 //===================
 
-app.get("/antiques/:id/comments/new", (req, res) => {
+app.get("/antiques/:id/comments/new", isLoggedIn, (req, res) => {
   // find antiques by id
   Antique.findById(req.params.id, (err, antique) => {
     if (err) {
@@ -82,7 +107,7 @@ app.get("/antiques/:id/comments/new", (req, res) => {
   });
 });
 
-app.post("/antiques/:id/comments", (req, res) => {
+app.post("/antiques/:id/comments", isLoggedIn, (req, res) => {
   // Lookup new comment by id
   Antique.findById(req.params.id, (err, antique) => {
     if (err) {
@@ -104,7 +129,55 @@ app.post("/antiques/:id/comments", (req, res) => {
   // connect new comment to antique
   // redirect antiques show page
 });
+//================
+// AUTH ROUTES
+//================
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+app.post("/register", (req, res) => {
+  let newUser = new User({ username: req.body.username });
+  User.register(newUser, req.body.password, (err, user) => {
+    if (err) {
+      console.log(err);
+      res.render("register");
+    } else {
+      passport.authenticate("local")(req, res, () => {
+        res.redirect("/antiques");
+      });
+    }
+  });
+});
 
+// Show Login Form
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+//Handling Login Logic
+//app.post("/login", middleware, callback)
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/antiques",
+    failureRedirect: "/login"
+  }),
+  (req, res) => {
+    res.send("login");
+  }
+);
+
+// Logout Route
+app.get("/logout", (req, res) => {
+  req.logOut();
+  res.redirect("/antiques");
+});
+
+function isLoggedIn(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+}
 app.listen(3000, () => {
   console.log("The Antique Server Has  Started!!");
 });
