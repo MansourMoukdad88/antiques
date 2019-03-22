@@ -27,8 +27,15 @@ router.post("/antiques/:id/comments", isLoggedIn, (req, res) => {
         if (err) {
           console.log(err);
         } else {
+          // add id and username to comment
+          // save to db
+          console.log("qqqqqqqqq", req.user.username);
+          comment.author.id = req.user._id;
+          comment.author.username = req.user.username;
+          comment.save();
           antique.comments.push(comment);
           antique.save();
+          console.log(comment);
           res.redirect("/antiques/" + antique._id);
         }
       });

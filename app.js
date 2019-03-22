@@ -8,6 +8,7 @@ const Antique = require("./models/antique");
 const Comment = require("./models/comment");
 const User = require("./models/user");
 const seedDb = require("./seeds");
+// require routes
 const antiquesRoutes = require("./routes/antiques");
 const commentRoutes = require("./routes/comments");
 const authRoutes = require("./routes/authIndex");
@@ -36,11 +37,12 @@ mongoose.connect("mongodb://localhost:27017/antiques", {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
-seedDb();
+// seedDb(); // see the database
 
 app.use(authRoutes);
 app.use(antiquesRoutes);
 app.use(commentRoutes);
+
 app.listen(3000, () => {
   console.log("The Antique Server Has  Started!!");
 });
