@@ -43,44 +43,56 @@ router.post("/antiques/:id/comments", isLoggedIn, (req, res) => {
   });
 });
 // Comments Edit
-router.get("/antiques/:id/comments/:comment_id/edit", (req, res) => {
-  Comment.findById(req.params.comment_id, (err, foundComments) => {
-    console.log(req.params);
-    if (err) {
-      res.redirect("back");
-    }
-    {
-      res.render("comments/edit", {
-        antique_id: req.params.id,
-        comment: foundComments
-      });
-    }
-  });
-});
+router.get(
+  "/antiques/:id/comments/:comment_id/edit",
+  checkCommentsOwnership,
+  (req, res) => {
+    Comment.findById(req.params.comment_id, (err, foundComments) => {
+      console.log(req.params);
+      if (err) {
+        res.redirect("back");
+      }
+      {
+        res.render("comments/edit", {
+          antique_id: req.params.id,
+          comment: foundComments
+        });
+      }
+    });
+  }
+);
 // Comment Update
-router.put("/antiques/:id/comments/:comment_id", (req, res) => {
-  Comment.findByIdAndUpdate(
-    req.params.comment_id,
-    req.body.comment,
-    (err, updatedComment) => {
+router.put(
+  "/antiques/:id/comments/:comment_id",
+  checkCommentsOwnership,
+  (req, res) => {
+    Comment.findByIdAndUpdate(
+      req.params.comment_id,
+      req.body.comment,
+      (err, updatedComment) => {
+        if (err) {
+          res.redirect("back");
+        } else {
+          res.redirect("/antiques/" + req.params.id);
+        }
+      }
+    );
+  }
+);
+// Destroy Route
+router.delete(
+  "/antiques/:id/comments/:comment_id",
+  checkCommentsOwnership,
+  (req, res) => {
+    Comment.findByIdAndDelete(req.params.comment_id, err => {
       if (err) {
         res.redirect("back");
       } else {
         res.redirect("/antiques/" + req.params.id);
       }
-    }
-  );
-});
-// Destroy Route
-router.delete("/antiques/:id/comments/:comment_id", (req, res) => {
-  Comment.findByIdAndDelete(req.params.comment_id, (err)=> {
-    if(err) {
-      res.redirect("back")
-    } else {
-      res.redirect("/antiques/" + req.params.id)
-    }
-  } )
-});
+    });
+  }
+);
 
 // Middleware
 function isLoggedIn(req, res, next) {
@@ -88,6 +100,25 @@ function isLoggedIn(req, res, next) {
     return next();
   }
   res.redirect("/login");
+}
+
+function checkCommentsOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    Comment.findById(req.params.comment_id, (err, foundComment) => {
+      if (err) {
+        console.log("ssss", err);
+      } else {
+        // does user own the comment
+        if (foundComment.author.id.equals(req.user._id)) {
+          next();
+        } else {
+          res.redirect("back");
+        }
+      }
+    });
+  } else {
+    res.redirect("back");
+  }
 }
 
 module.exports = router;
