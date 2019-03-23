@@ -42,6 +42,35 @@ router.post("/antiques/:id/comments", isLoggedIn, (req, res) => {
     }
   });
 });
+// Comments Edit
+router.get("/antiques/:id/comments/:comment_id/edit", (req, res) => {
+  Comment.findById(req.params.comment_id, (err, foundComments) => {
+    console.log(req.params);
+    if (err) {
+      res.redirect("back");
+    }
+    {
+      res.render("comments/edit", {
+        antique_id: req.params.id,
+        comment: foundComments
+      });
+    }
+  });
+});
+// Comment Update
+router.put("/antiques/:id/comments/:comment_id", (req, res) => {
+  Comment.findByIdAndUpdate(
+    req.params.comment_id,
+    req.body.comment,
+    (err, updatedComment) => {
+      if (err) {
+        res.redirect("back");
+      } else {
+        res.redirect("/antiques/" + req.params.id);
+      }
+    }
+  );
+});
 // Middleware
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
