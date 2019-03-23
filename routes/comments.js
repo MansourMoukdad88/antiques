@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const Antique = require("../models/antique");
 const Comment = require("../models/comment");
+let middleware = require("../middleware");
 
 // Comments New
-router.get("/antiques/:id/comments/new", isLoggedIn, (req, res) => {
+router.get("/antiques/:id/comments/new", middleware.isLoggedIn, (req, res) => {
   // find antiques by id
   Antique.findById(req.params.id, (err, antique) => {
     if (err) {
@@ -16,7 +17,7 @@ router.get("/antiques/:id/comments/new", isLoggedIn, (req, res) => {
 });
 
 // Comments Create
-router.post("/antiques/:id/comments", isLoggedIn, (req, res) => {
+router.post("/antiques/:id/comments", middleware.isLoggedIn, (req, res) => {
   // Lookup new comment by id
   Antique.findById(req.params.id, (err, antique) => {
     if (err) {
@@ -45,7 +46,7 @@ router.post("/antiques/:id/comments", isLoggedIn, (req, res) => {
 // Comments Edit
 router.get(
   "/antiques/:id/comments/:comment_id/edit",
-  checkCommentsOwnership,
+  middleware.checkCommentsOwnership,
   (req, res) => {
     Comment.findById(req.params.comment_id, (err, foundComments) => {
       console.log(req.params);
@@ -64,7 +65,7 @@ router.get(
 // Comment Update
 router.put(
   "/antiques/:id/comments/:comment_id",
-  checkCommentsOwnership,
+  middleware.checkCommentsOwnership,
   (req, res) => {
     Comment.findByIdAndUpdate(
       req.params.comment_id,
@@ -82,7 +83,7 @@ router.put(
 // Destroy Route
 router.delete(
   "/antiques/:id/comments/:comment_id",
-  checkCommentsOwnership,
+  middleware.checkCommentsOwnership,
   (req, res) => {
     Comment.findByIdAndDelete(req.params.comment_id, err => {
       if (err) {
@@ -95,30 +96,5 @@ router.delete(
 );
 
 // Middleware
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-}
-
-function checkCommentsOwnership(req, res, next) {
-  if (req.isAuthenticated()) {
-    Comment.findById(req.params.comment_id, (err, foundComment) => {
-      if (err) {
-        console.log("ssss", err);
-      } else {
-        // does user own the comment
-        if (foundComment.author.id.equals(req.user._id)) {
-          next();
-        } else {
-          res.redirect("back");
-        }
-      }
-    });
-  } else {
-    res.redirect("back");
-  }
-}
 
 module.exports = router;

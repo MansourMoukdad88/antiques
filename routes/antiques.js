@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Antique = require("../models/antique");
 const Comment = require("../models/comment");
+let middleware = require("../middleware");
 
 // INDEX - Show all Antiques
 router.get("/antiques", (req, res) => {
@@ -20,7 +21,7 @@ router.get("/antiques", (req, res) => {
 });
 
 // Create - Add A New Antiques to Db
-router.post("/antiques", isLoggedIn, (req, res) => {
+router.post("/antiques", middleware.isLoggedIn, (req, res) => {
   // res.send("You ht the post route");
   let name = req.body.name;
   let image = req.body.image;
@@ -47,7 +48,7 @@ router.post("/antiques", isLoggedIn, (req, res) => {
   });
 });
 // NEW - Show form to create new Antique
-router.get("/antiques/new", isLoggedIn, (req, res) => {
+router.get("/antiques/new", middleware.isLoggedIn, (req, res) => {
   res.render("antiques/new");
 });
 // SHOW - show more info about one Antique
@@ -66,17 +67,19 @@ router.get("/antiques/:id", (req, res) => {
 });
 
 // Edit Antique Route
-router.get("/antiques/:id/edit", checkAntiquesOwnership, (req, res) => {
-  // if user login
+router.get(
+  "/antiques/:id/edit",
+  middleware.checkAntiquesOwnership,
+  (req, res) => {
+    // if user login
     Antique.findById(req.params.id, (err, foundAntique) => {
       res.render("antiques/edit", { antique: foundAntique });
-    });  
-});
-
-
+    });
+  }
+);
 
 // Update Antique Route
-router.put("/antiques/:id",checkAntiquesOwnership, (req, res) => {
+router.put("/antiques/:id", middleware.checkAntiquesOwnership, (req, res) => {
   //Find and Update the correct antique
   Antique.findByIdAndUpdate(
     req.params.id,
@@ -94,39 +97,20 @@ router.put("/antiques/:id",checkAntiquesOwnership, (req, res) => {
 });
 
 //Destroy Antiques Route
-router.delete("/antiques/:id", checkAntiquesOwnership, (req, res) => {
-  Antique.findByIdAndRemove(req.params.id, err => {
-    if (err) {
-      res.redirect("/antiques");
-    } else {
-      res.redirect("/antiques");
-    }
-  });
-});
-
-// middleware
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-}
-function checkAntiquesOwnership(req, res, next) {
-  if (req.isAuthenticated()) {
-    Antique.findById(req.params.id, (err, foundAntique) => {
+router.delete(
+  "/antiques/:id",
+  middleware.checkAntiquesOwnership,
+  (req, res) => {
+    Antique.findByIdAndRemove(req.params.id, err => {
       if (err) {
-        console.log("ssss", err);
+        res.redirect("/antiques");
       } else {
-        if (foundAntique.author.id.equals(req.user._id)) {
-          next();
-        } else {
-          res.redirect("back")
-        }
+        res.redirect("/antiques");
       }
     });
-  } else {
-    res.redirect("back");
   }
-}
+);
+
+// middleware
 
 module.exports = router;
