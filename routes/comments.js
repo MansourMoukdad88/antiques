@@ -71,6 +71,17 @@ router.put("/antiques/:id/comments/:comment_id", (req, res) => {
     }
   );
 });
+// Destroy Route
+router.delete("/antiques/:id/comments/:comment_id", (req, res) => {
+  Comment.findByIdAndDelete(req.params.comment_id, (err)=> {
+    if(err) {
+      res.redirect("back")
+    } else {
+      res.redirect("/antiques/" + req.params.id)
+    }
+  } )
+});
+
 // Middleware
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
