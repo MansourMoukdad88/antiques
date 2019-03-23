@@ -18,6 +18,18 @@
           <p></p>
           <p><%= antique.description %></p>
           <p><em> Submitted By <%= antique.author.username %></em></p>
+          <a
+            class="btn btn-xs btn-warning"
+            href="/antiques/<%=antique._id%>/edit"
+            >Edit</a
+          >
+          <form
+            id="deleteForm"
+            action="/antiques/<%=antique._id%>?_method=DELETE"
+            method="POST"
+          >
+            <button class="btn btn-xs btn-danger">Delete</button>
+          </form>
         </div>
       </div>
       <div class="well">

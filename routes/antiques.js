@@ -65,11 +65,68 @@ router.get("/antiques/:id", (req, res) => {
     });
 });
 
+// Edit Antique Route
+router.get("/antiques/:id/edit", checkAntiquesOwnership, (req, res) => {
+  // if user login
+    Antique.findById(req.params.id, (err, foundAntique) => {
+      res.render("antiques/edit", { antique: foundAntique });
+    });  
+});
+
+
+
+// Update Antique Route
+router.put("/antiques/:id",checkAntiquesOwnership, (req, res) => {
+  //Find and Update the correct antique
+  Antique.findByIdAndUpdate(
+    req.params.id,
+    req.body.antique,
+    (err, updatedAntique) => {
+      if (err) {
+        console.log("wwwwww", err);
+        res.redirect("/antiques");
+      } else {
+        res.redirect("/antiques/" + req.params.id);
+      }
+    }
+  );
+  // Redirect somewhere(Show Page)
+});
+
+//Destroy Antiques Route
+router.delete("/antiques/:id", checkAntiquesOwnership, (req, res) => {
+  Antique.findByIdAndRemove(req.params.id, err => {
+    if (err) {
+      res.redirect("/antiques");
+    } else {
+      res.redirect("/antiques");
+    }
+  });
+});
+
+// middleware
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
   res.redirect("/login");
+}
+function checkAntiquesOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    Antique.findById(req.params.id, (err, foundAntique) => {
+      if (err) {
+        console.log("ssss", err);
+      } else {
+        if (foundAntique.author.id.equals(req.user._id)) {
+          next();
+        } else {
+          res.redirect("back")
+        }
+      }
+    });
+  } else {
+    res.redirect("back");
+  }
 }
 
 module.exports = router;

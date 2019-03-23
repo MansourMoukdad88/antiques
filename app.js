@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const methodOverride = require("method-override");
 const Antique = require("./models/antique");
 const Comment = require("./models/comment");
 const User = require("./models/user");
@@ -37,6 +38,7 @@ mongoose.connect("mongodb://localhost:27017/antiques", {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
 // seedDb(); // see the database
 
 app.use(authRoutes);
