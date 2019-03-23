@@ -18,6 +18,7 @@
           <p></p>
           <p><%= antique.description %></p>
           <p><em> Submitted By <%= antique.author.username %></em></p>
+          <% if(currentUser && antique.author.id.equals(currentUser._id)){%>
           <a
             class="btn btn-xs btn-warning"
             href="/antiques/<%=antique._id%>/edit"
@@ -30,6 +31,8 @@
           >
             <button class="btn btn-xs btn-danger">Delete</button>
           </form>
+
+          <%}%>
         </div>
       </div>
       <div class="well">
