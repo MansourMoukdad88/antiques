@@ -24,6 +24,7 @@ router.get("/antiques", (req, res) => {
 router.post("/antiques", middleware.isLoggedIn, (req, res) => {
   // res.send("You ht the post route");
   let name = req.body.name;
+  let price = req.body.price;
   let image = req.body.image;
   let description = req.body.description;
   let author = {
@@ -32,6 +33,7 @@ router.post("/antiques", middleware.isLoggedIn, (req, res) => {
   };
   let newAntique = {
     name: name,
+    price: price,
     image: image,
     description: description,
     author: author

@@ -13,12 +13,11 @@
       <div class="thumbnail">
         <img class="img-responsive" src="<%= antique.image %>" />
         <div class="caption-full">
-          <h4 class="pull-right">$98.99</h4>
+          <h4 class="pull-right">$<%=antique.price %></h4>
           <h4><a href=""><%= antique.name %></a></h4>
           <p></p>
           <p><%= antique.description %></p>
           <p><em> Submitted By <%= antique.author.username %></em></p>
-
 
           <% if(currentUser && antique.author.id.equals(currentUser._id)){%>
           <a
@@ -55,7 +54,7 @@
               <%= comment.text%>
             </p>
 
-          <% if(currentUser && comment.author.id.equals(currentUser._id)){%>
+            <% if(currentUser && comment.author.id.equals(currentUser._id)){%>
             <a
               class="btn btn-xs btn-warning"
               href="/antiques/<%=antique._id%>/comments/<%=comment._id%>/edit"
@@ -70,8 +69,7 @@
                 Delete
               </button>
             </form>
-          <%}%>
-
+            <%}%>
           </div>
         </div>
         <% }) %> <% include ../partials/footer %>
