@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
 // show register form
 router.get("/register", (req, res) => {
-  res.render("register");
+  res.render("register", { page: "register" });
 });
 
 // handle sign up route
@@ -18,12 +18,14 @@ router.post("/register", (req, res) => {
   let newUser = new User({ username: req.body.username });
   User.register(newUser, req.body.password, (err, user) => {
     if (err) {
-      // console.log(err);
-      //req.flash("error", err.message);
-      return res.render("register" ,{ "error": err.message });
+      console.log(err);
+      return res.render("register", { error: err.message });
     } else {
       passport.authenticate("local")(req, res, () => {
-        req.flash("success", "Welcome to Antiques " + user.username);
+        req.flash(
+          "success",
+          "Successfully Signed Up! Nice to meet you " + req.body.username
+        );
         res.redirect("/antiques");
       });
     }
@@ -32,7 +34,7 @@ router.post("/register", (req, res) => {
 
 // Show Login Form
 router.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", { page: "login" });
 });
 //Handling Login Logic
 //app.post("/login", middleware, callback)

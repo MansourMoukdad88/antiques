@@ -14,7 +14,8 @@ router.get("/antiques", (req, res) => {
     } else {
       res.render("antiques/index", {
         antiques: allAntique,
-        currentUser: req.user
+        currentUser: req.user,
+        page:"antiques"
       });
     }
   });
