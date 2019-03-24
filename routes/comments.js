@@ -26,7 +26,7 @@ router.post("/antiques/:id/comments", middleware.isLoggedIn, (req, res) => {
     } else {
       Comment.create(req.body.comment, (err, comment) => {
         if (err) {
-          console.log(err);
+          req.flash("error", "Something went wrong");
         } else {
           // add id and username to comment
           // save to db
@@ -37,6 +37,7 @@ router.post("/antiques/:id/comments", middleware.isLoggedIn, (req, res) => {
           antique.comments.push(comment);
           antique.save();
           console.log(comment);
+          req.flash("success", "Successfully added comment");
           res.redirect("/antiques/" + antique._id);
         }
       });
@@ -89,6 +90,8 @@ router.delete(
       if (err) {
         res.redirect("back");
       } else {
+        req.flash("success", "Comment deleted");
+
         res.redirect("/antiques/" + req.params.id);
       }
     });

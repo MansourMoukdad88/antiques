@@ -18,10 +18,12 @@ router.post("/register", (req, res) => {
   let newUser = new User({ username: req.body.username });
   User.register(newUser, req.body.password, (err, user) => {
     if (err) {
-      console.log(err);
-      res.render("register");
+      // console.log(err);
+      //req.flash("error", err.message);
+      return res.render("register" ,{ "error": err.message });
     } else {
       passport.authenticate("local")(req, res, () => {
+        req.flash("success", "Welcome to Antiques " + user.username);
         res.redirect("/antiques");
       });
     }
@@ -48,15 +50,9 @@ router.post(
 // Logout Route
 router.get("/logout", (req, res) => {
   req.logOut();
+  req.flash("success", "Logged You Out!");
   res.redirect("/antiques");
 });
 
 // middleware
-function isLoggedIn(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-}
-
 module.exports = router;
