@@ -1,5 +1,6 @@
 body {
   background-color: #000;
+  /* font-family: "Dancing Script", cursive; */
 }
 #landing-header {
   z-index: 1;
@@ -9,6 +10,12 @@ body {
 }
 #landing-header h1 {
   color: #fff;
+  font-size: 70px;
+  font-family: "Dancing Script", cursive;
+}
+#landing-header a {
+  font-family: "Old Standard TT", serif;
+
 }
 
 .slideshow {
@@ -33,26 +40,26 @@ body {
   background-repeat: no-repeat;
   opacity: 0;
   z-index: 0;
-  animation: imageAnimation 50s linear infinite;
+  animation: imageAnimation 25s linear infinite;
 }
 .slideshow li:nth-child(1) {
-  background-image: url(http://i.imgur.com/K3mPv14.jpg);
+  background-image: url(https://images.pexels.com/photos/247929/pexels-photo-247929.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940);
 }
 .slideshow li:nth-child(2) {
-  background-image: url(http://i.imgur.com/SBEmFpv.jpg);
-  animation-delay: 10s;
+  background-image: url(https://antiquegallerydenton.com/wp-content/uploads/2017/04/deskTop-2560x1600_c.jpg);
+  animation-delay: 5s;
 }
 .slideshow li:nth-child(3) {
-  background-image: url(http://i.imgur.com/emvhOnb.jpg);
-  animation-delay: 20s;
+  background-image: url(https://images.pexels.com/photos/859895/pexels-photo-859895.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940);
+  animation-delay: 10s;
 }
 .slideshow li:nth-child(4) {
-  background-image: url(http://i.imgur.com/2LSMCmJ.jpg);
-  animation-delay: 30s;
+  background-image: url(https://images.pexels.com/photos/280402/pexels-photo-280402.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940);
+  animation-delay: 15s;
 }
 .slideshow li:nth-child(5) {
-  background-image: url(http://i.imgur.com/TVGe0Ef.jpg);
-  animation-delay: 40s;
+  background-image: url(https://images.pexels.com/photos/827519/pexels-photo-827519.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940);
+  animation-delay: 20s;
 }
 
 @keyframes imageAnimation {
@@ -73,5 +80,5 @@ body {
 }
 /* Older browser support - .no-cssanimations class added by modernizr */
 .no-cssanimations .slideshow li {
-	opacity: 1;
+  opacity: 1;
 }
